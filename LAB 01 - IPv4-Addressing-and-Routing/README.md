@@ -4,7 +4,7 @@
 The purpose of this lab was to reinforce IPv4 addressing concepts by configuring router interfaces across four distinct networks and testing end-to-end connectivity. 
 
 ## Network Topology
-[Network Topology Map](network_topology.png)
+![Network Topology Map](Network-topology.png)
 
 ## Technologies Demonstrated
 * IPv4 Addressing & Subnet Masking
