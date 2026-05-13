@@ -1,0 +1,69 @@
+##1. HQ-Router Configuration:
+
+interface GigabitEthernet0/0
+ description [default gateway for LAN 1]
+ ip address 215.0.0.1 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/1
+ description [connects ZONE 1 LAN to ZONE 2 WAN]
+ ip address 172.29.0.1 255.255.0.0
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/2
+ no ip address
+ duplex auto
+ speed auto
+ shutdown
+!
+
+
+##2. Core-Transit Router Configuration
+
+interface GigabitEthernet0/0
+ description [connects ZONE 1 to ZONE 2]
+ ip address 172.29.0.2 255.255.0.0
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/1
+ description [connects ZONE 2 WAN to ZONE 3 WAN]
+ ip address 203.0.113.1 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/2
+ no ip address
+ duplex auto
+ speed auto
+ shutdown
+!
+
+
+##3. Branch-Router Configuration
+
+!
+interface GigabitEthernet0/0
+ description [connects ZONE 4 LAN to ZONE 3 WAN]
+ ip address 203.0.113.2 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/1
+ description [default gateway for ZONE 4 LAN]
+ ip address 194.169.1.1 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/2
+ no ip address
+ duplex auto
+ speed auto
+ shutdown
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
