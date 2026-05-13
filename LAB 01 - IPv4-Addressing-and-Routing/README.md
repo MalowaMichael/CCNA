@@ -17,6 +17,20 @@ The lab intentionally tests communication between Network 1 and Network 4.
 ### Expected Result vs. Actual Result
 * **Action:** Attempted to ping the PC-3 in Network 4 (ZONE 4) from PC-1 in Network 1 (ZONE 1).
 * **Result:** The ping failed.
+* ```text
+Packet Tracer PC Command Line 1.0
+C:\> ping 192.168.4.10
+
+Pinging 192.168.4.10 with 32 bytes of data:
+
+Request timed out.
+Request timed out.
+Request timed out.
+Request timed out.
+
+Ping statistics for 192.168.4.10:
+    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss),
+```
 * **Error Encountered:** `Request timed out`.
 
 ### Root Cause Analysis
