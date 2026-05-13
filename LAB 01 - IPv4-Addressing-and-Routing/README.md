@@ -35,7 +35,7 @@ Ping statistics for 192.168.4.10:
     ```
 
     
-**Error Encountered:** `Request timed out`.
+**Error Encountered:** ```Request timed out```.
 
 ### Root Cause Analysis
 The ping failed due to a fundamental routing limitation:
@@ -44,7 +44,7 @@ The ping failed due to a fundamental routing limitation:
 3. **Subnet Validation:** The router interfaces correctly rejected overlapping subnets, proving the subnets were calculated accurately, but layout limitations prevented cross-network ICMP replies.
 
 ## How to Run This Lab
-1. Download `ipv4_subnets_lab.pkt`.
+1. Download ```ipv4_subnets_lab.pkt```.
 2. Open the file in Cisco Packet Tracer.
 3. Open the Desktop terminal on PC-1 and run `ping [IP_of_PC_in_Net_4]` to reproduce the error.
 
