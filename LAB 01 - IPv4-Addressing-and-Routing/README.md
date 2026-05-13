@@ -16,26 +16,8 @@ The lab intentionally tests communication between Network 1 and Network 4.
 
 ### Expected Result vs. Actual Result
 * **Action:** Attempted to ping the PC-3 in Network 4 (ZONE 4) from PC-1 in Network 1 (ZONE 1).
-* **Result:** The ping failed.
-*
- 
- ```
-C:\> ping 192.168.4.10
-
-Pinging 192.168.4.10 with 32 bytes of data:
-
-Request timed out.
-Request timed out.
-Request timed out.
-Request timed out.
-
-Ping statistics for 192.168.4.10:
-    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss), 
-    
-    ```
-
-    
-**Error Encountered:** ```Request timed out```.
+* **Result:** The ping failed.    
+**Error Encountered:** `Request timed out`.
 
 ### Root Cause Analysis
 The ping failed due to a fundamental routing limitation:
@@ -44,7 +26,7 @@ The ping failed due to a fundamental routing limitation:
 3. **Subnet Validation:** The router interfaces correctly rejected overlapping subnets, proving the subnets were calculated accurately, but layout limitations prevented cross-network ICMP replies.
 
 ## How to Run This Lab
-1. Download ```ipv4_subnets_lab.pkt```.
+1. Download `ipv4_subnets_lab.pkt`.
 2. Open the file in Cisco Packet Tracer.
 3. Open the Desktop terminal on PC-1 and run `ping [IP_of_PC_in_Net_4]` to reproduce the error.
 
