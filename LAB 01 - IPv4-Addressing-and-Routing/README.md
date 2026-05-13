@@ -30,7 +30,11 @@ Request timed out.
 Request timed out.
 
 Ping statistics for 192.168.4.10:
-    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss), ```
+    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss), 
+    
+    ```
+
+    
 **Error Encountered:** `Request timed out`.
 
 ### Root Cause Analysis
