@@ -1,4 +1,4 @@
-# Lab: IPv4 Addressing & Subnet Verification
+# Lab 01: IPv4 Addressing & Routing
 
 ## Objective
 The purpose of this lab was to reinforce IPv4 addressing concepts by configuring router interfaces across four distinct networks and testing end-to-end connectivity. 
