@@ -21,7 +21,7 @@ To eliminate physical security vulnerabilities, all unused interfaces were isola
 
 ### SW-CORE-01 Deployment Script
 ```text
-SW-CORE-01# configure terminal
+SW-CORE-01# conf t
 SW-CORE-01(config)# hostname SW-CORE-01
 SW-CORE-01(config)# enable secret sysadmin99
 SW-CORE-01(config)# banner motd $
@@ -30,15 +30,15 @@ WARNING
  * UNAUTHORIZED ACCESS IS PROHIBITED *
 *************************************
 $
-SW-CORE-01(config)# interface range gigabitethernet 0/2, fastethernet 0/5 - 24
-SW-CORE-01(config-if-range)# shutdown
+SW-CORE-01(config)# int range gig0/2, fa0/5 - 24
+SW-CORE-01(config-if-range)# shut
 SW-CORE-01(config-if-range)# end
 SW-CORE-01# write memory
 ```
 
 ### SW-CORE-02 Deployment Script
 ```text
-SW-CORE-02# configure terminal
+SW-CORE-02# conf t
 SW-CORE-02(config)# hostname SW-CORE-02
 SW-CORE-02(config)# enable secret sysadmin99
 SW-CORE-02(config)# banner motd $
@@ -47,8 +47,8 @@ WARNING
  * UNAUTHORIZED ACCESS IS PROHIBITED *
 *************************************
 $
-SW-CORE-02(config)# interface range gigabitethernet 0/2, fastethernet 0/1 - 4, fastethernet 0/9 - 24
-SW-CORE-02(config-if-range)# shutdown
+SW-CORE-02(config)# int range gig0/2, fa0/1 - 4, fa0/9 - 24
+SW-CORE-02(config-if-range)# shut
 SW-CORE-02(config-if-range)# end
 SW-CORE-02# write memory
 ```
@@ -58,7 +58,7 @@ SW-CORE-02# write memory
 ## 🕵️‍♂️ Task 2: Root Cause Analysis (RCA) — The Backbone Mismatch Mystery
 
 ### Symptom Profile
-The backbone uplink (`Gi0/1`) retains a physical link light (`connected`), but data throughput degrades heavily and experiences massive packet drops whenever server backup routines execute.
+The backbone uplink (`Gi0/1`) retains a physical link light (`connected`), but data throughput degrades heavily and experiences massive packet drops whenever server backup routines execute. You decide to run diagnostics and below are the data you pull from the two core switches:
 
 ### Collected Diagnostic Data
 * **`SW-CORE-01# show interfaces gigabitethernet 0/1`**
@@ -84,9 +84,9 @@ To stabilize the link and maximize performance across the degraded Layer 1 mediu
 
 ### SW-CORE-01 Remediation
 ```text
-SW-CORE-01# configure terminal
-SW-CORE-01(config)# interface gigabitethernet 0/1
-SW-CORE-01(config-if)# description [MANUAL BACKBONE UPLINK TO CORE 02]
+SW-CORE-01# conf t
+SW-CORE-01(config)# int gig0/1
+SW-CORE-01(config-if)# desc [MANUAL BACKBONE UPLINK TO SW-CORE-02]
 SW-CORE-01(config-if)# speed 100
 SW-CORE-01(config-if)# duplex full
 SW-CORE-01(config-if)# end
@@ -94,9 +94,9 @@ SW-CORE-01(config-if)# end
 
 ### SW-CORE-02 Remediation
 ```text
-SW-CORE-02# configure terminal
-SW-CORE-02(config)# interface gigabitethernet 0/1
-SW-CORE-02(config-if)# description [MANUAL BACKBONE UPLINK TO CORE 01]
+SW-CORE-02# conf t
+SW-CORE-02(config)# int gig0/1
+SW-CORE-02(config-if)# desc [MANUAL BACKBONE UPLINK TO SW-CORE-01]
 SW-CORE-02(config-if)# speed 100
 ```
 *(Note: Per Cisco IOS fallback behavior, hardcoding the speed to 100 on a FastEthernet/Gigabit interface automatically drops a non-negotiating interface to Half-Duplex unless explicitly stated. Therefore, configuring `duplex full` ensures symmetry).*
