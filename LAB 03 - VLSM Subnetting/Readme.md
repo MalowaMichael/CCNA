@@ -1,130 +1,189 @@
-# Comprehensive Enterprise Network Deployment Challenge ( Jeremy's Day 1–15 Capstone)
+# 🚀 Mega Enterprise Infrastructure Capstone (Day 1–18 Final Exam)
 
 ## 📌 Project Overview
-This repository contains the architecture, configuration files, and implementation details for a highly secure, scalable, multi-router enterprise network deployment. The scenario encompasses hierarchical Variable Length Subnet Masking (VLSM) across Class A, B, and C private spaces, advanced layer 2 switch security, inter-network traffic redirection, and a resilient routing fabric utilizing Static, Default, and Floating Static paths.
+This repository contains a comprehensive, multi-site enterprise network deployment modeling a distributed corporate infrastructure. The design incorporates a Corporate HQ Data Center, an Academic Campus, and a Regional Sales Branch. 
+
+This project functions as a rigorous capstone assessment covering concepts from Days 1 to 18 of Jeremy's IT Lab. It tests your precision across back-to-back Variable Length Subnet Masking (VLSM), multi-tier layer 2 segmentation, redundant inter-VLAN routing (Router-on-a-Stick and Multilayer Switching), custom native VLAN re-alignments, physical media layer optimization, port-level security hardening, and explicit point-to-point static routing paths.
+
+**Exam Rule:** No default routes (`0.0.0.0 0.0.0.0`) are allowed anywhere in this topology. Every path must be explicitly mapped. A single typo in a subnet mask, an mismatched native VLAN configuration, or an incorrect next-hop path will result in total routing failure across domains.
 
 ---
 
-## 🛠️ Physical Topology & Hardware Mapping
+## 🛠️ Physical Topology & Workspace Architecture
 
-Deploy the following inventory within Cisco Packet Tracer. Cabling must align exactly with the assigned interfaces.
+Build the following logical infrastructure footprint within Cisco Packet Tracer. Group the components using visual boxes to represent different geographic regions. Ensure your physical connections map cleanly without messy, crossing lines.
 
-### 🏢 HQ Data Center (Class A Infrastructure)
-*   **1x Cisco 2911 Router:** Name it `HQ-Core`.
-*   **3x Cisco 2960 Switches:** Name them `SW-DC-Prod`, `SW-DC-Dev`, and `SW-DC-Mgmt`.
-*   **Connections:**
-    *   `HQ-Core` `G0/0` ➡️ `SW-DC-Prod` `F0/24`
-    *   `HQ-Core` `G0/1` ➡️ `SW-DC-Dev` `F0/24`
-    *   `HQ-Core` `G0/2` ➡️ `SW-DC-Mgmt` `F0/24`
-*   **End Devices:** Attach **1x Server** to each switch on interface `F0/1`. Name them `Prod-Server-1`, `Dev-Server-1`, and `Mgmt-Server-1`.
+```text
+====================================================================================================================
+                                            [WAN TRANSIT BACKBONE MESH]
+               
+         (Primary WAN 1)                     Primary Serial Link (192.168.222.0/30)                    (Primary WAN 1)
+            [HQ-Core] =============================================================================== [Campus-MLS]
+               \\                                                                                         //
+                \\                                                                                       //
+          Backup \\ (G0/0/0)                                                                            // Primary WAN 2
+        Floating  \\                                                                                   //  
+        WAN Path   \\================================== [Branch-ROAS] ================================//
+                                                            (G0/0)
+====================================================================================================================
+```
 
-### 🏫 Campus Core (Class B Infrastructure)
-*   **1x Cisco 2911 Router:** Name it `Campus-Edge`.
-*   **2x Cisco 2960 Switches:** Name them `SW-Camp-WiFI` and `SW-Camp-Labs`.
-*   **Connections:**
-    *   `Campus-Edge` `G0/1` ➡️ `SW-Camp-WiFI` `F0/24`
-    *   `Campus-Edge` `G0/2` ➡️ `SW-Camp-Labs` `F0/24`
-*   **End Devices:** Attach **1x PC** to each switch on interface `F0/1`. Name them `WiFi-Host-1` and `Lab-Host-1`.
+### 🏢 1. Corporate HQ Core (Class B Address Pool) — *Inter-VLAN via ROAS*
+*   **Inventory:** One router named `HQ-Core` and one access layer switch named `SW-HQ-Distribution`.
+*   **Interconnect Wiring:** Cable the router's GigabitEthernet0/1 interface straight down to the switch's FastEthernet0/24 interface. This trunk line will serve as your Router-on-a-Stick engine.
+*   **Workstations:** Deploy 5 separate end-user PCs on the workspace canvas. Name them `HQ-PC-1` through `HQ-PC-5`. Connect them respectively into `SW-HQ-Distribution` interfaces FastEthernet0/1, FastEthernet0/2, FastEthernet0/3, FastEthernet0/4, and FastEthernet0/5.
 
-### 🏘️ Regional Branch (Class C Infrastructure)
-*   **1x Cisco 2911 Router:** Name it `Branch-R1`.
-*   **2x Cisco 2960 Switches:** Name them `SW-Br-Sales` and `SW-Br-Ops`.
-*   **Connections:**
-    *   `Branch-R1` `G0/1` ➡️ `SW-Br-Sales` `F0/24`
-    *   `Branch-R1` `G0/2` ➡️ `SW-Br-Ops` `F0/24`
-*   **End Devices:** Attach **1x PC** to each switch on interface `F0/1`. Name them `Sales-Host-1` and `Ops-Host-1`.
+### 🏫 2. Academic Campus Core (Class A Address Pool) — *Inter-VLAN via Layer 3 Switch*
+*   **Inventory:** One Multilayer Switch named `Campus-MLS` and two access switches named `SW-Camp-Access1` and `SW-Camp-Access2`.
+*   **Interconnect Wiring:**
+    *   Connect `Campus-MLS` interface FastEthernet0/23 down to `SW-Camp-Access1` interface FastEthernet0/24.
+    *   Connect `Campus-MLS` interface FastEthernet0/24 down to `SW-Camp-Access2` interface FastEthernet0/24.
+*   **Workstations:** Deploy 7 separate PCs on the workspace canvas. Name them `Camp-PC-1` through `Camp-PC-7`.
+    *   Connect `Camp-PC-1`, `Camp-PC-2`, `Camp-PC-3`, and `Camp-PC-4` into `SW-Camp-Access1` interfaces FastEthernet0/1 through FastEthernet0/4.
+    *   Connect `Camp-PC-5`, `Camp-PC-6`, and `Camp-PC-7` into `SW-Camp-Access2` interfaces FastEthernet0/1 through FastEthernet0/3.
 
-### 🌐 WAN Backbone Mesh
-To enforce path redundancy, interconnect the routing engine using the following interfaces:
-*   **Primary Link (HQ to Campus):** `HQ-Core` `S0/0/0` ➡️ `Campus-Edge` `S0/0/0` (Serial DCE)
-*   **Primary Link (Campus to Branch):** `Campus-Edge` `S0/0/1` ➡️ `Branch-R1` `S0/0/1` (Serial DCE)
-*   **Backup Path (HQ to Branch Link):** `HQ-Core` `G0/0/0` (using HWIC-1GE expansion module if needed) or `S0/1/0` ➡️ `Branch-R1` `S0/1/0`
+### 🏘️ 3. Regional Sales Branch (Class C Address Pool) — *Legacy ROAS Infrastructure*
+*   **Inventory:** One router named `Branch-ROAS` and one access switch named `SW-Branch-Access`.
+*   **Interconnect Wiring:** Cable the router's GigabitEthernet0/1 interface straight down to the switch's FastEthernet0/24 interface.
+*   **Workstations:** Deploy 8 separate PCs on the workspace canvas. Name them `Br-PC-1` through `Br-PC-8`. Connect them respectively into `SW-Branch-Access` interfaces FastEthernet0/1 through FastEthernet0/8.
 
----
-
-## 🔢 Phase 1: Hierarchical VLSM Allocations
-You are issued three independent base address blocks. Subnetting must be calculated sequentially by host requirements from **largest to smallest** with zero gaps.
-
-### 📦 Allocation Block 1: Class A Space (`10.0.0.0/8`)
-*   **VLAN 10 (Production Data):** 150,000 required hosts.
-*   **VLAN 20 (Development Hub):** 60,000 required hosts.
-*   **VLAN 30 (Data Center Operations):** 25,000 required hosts.
-*   **VLAN 40 (Storage Network):** 8,000 required hosts.
-*   **VLAN 50 (In-Band Management):** 500 required hosts.
-*   *Rule:* Apply the **first usable IP** of each subnet to the `HQ-Core` LAN interface.
-
-### 📦 Allocation Block 2: Class B Space (`172.16.0.0/16`)
-*   **VLAN 110 (Student Wi-Fi):** 2,000 required hosts.
-*   **VLAN 120 (Engineering Labs):** 950 required hosts.
-*   **VLAN 130 (Faculty Staff):** 450 required hosts.
-*   **VLAN 140 (VoIP Infra):** 200 required hosts.
-*   **VLAN 150 (Campus Admin):** 60 required hosts.
-*   *Rule:* Apply the **first usable IP** of each subnet to the `Campus-Edge` LAN interface.
-
-### 📦 Allocation Block 3: Class C Space (`192.168.100.0/24`)
-*   **VLAN 210 (Sales Force):** 60 required hosts.
-*   **VLAN 220 (Branch Operations):** 28 required hosts.
-*   **VLAN 230 (Guest Portal):** 14 required hosts.
-*   **VLAN 240 (Retail POS):** 6 required hosts.
-*   **VLAN 250 (Branch Transit/Mgmt):** 2 required hosts.
-*   *Rule:* Apply the **first usable IP** of each subnet to the `Branch-R1` LAN interface.
-
-### 🛣️ WAN Links (Point-to-Point Blocks)
-From a separate container block of `192.168.200.0/24`, allocate three tight `/30` subnets back-to-back:
-1.  `WAN-HQ-to-Campus` (/30)
-2.  `WAN-Campus-to-Branch` (/30)
-3.  `WAN-HQ-to-Branch-Backup` (/30)
+### 🌐 4. WAN Interconnect Network
+*   **Primary WAN Link 1 (HQ to Campus):** Connect `HQ-Core` Serial0/0/0 to `Campus-MLS` GigabitEthernet0/1. 
+*   **Primary WAN Link 2 (Campus to Branch):** Connect `Campus-MLS` GigabitEthernet0/2 to `Branch-ROAS` Serial0/0/1.
+*   **Floating Redundant WAN Link (HQ to Branch):** Connect `HQ-Core` GigabitEthernet0/0/0 straight to `Branch-ROAS` GigabitEthernet0/0.
 
 ---
 
-## 🔒 Phase 2: Device Hardening & Layer 2 Security
-Configure all Routers and Switches to fulfill these institutional security requirements.
+## 🔢 Phase 1: High-Density Back-to-Back VLSM Calculation
 
-### ⌨️ Console, VTY, and Privilege EXEC Hardening
-*   **Hostname:** Enforce identical naming to the architecture topology layout.
-*   **Global Encryption:** Encrypt all plain-text passwords stored in the running configuration.
-*   **Privilege EXEC Mode:** Set the secret password to `CiscoPriv15!`.
-*   **Console Access:** Protect with password `ConsoleAccess99!`, enable login, and prevent console log messages from disrupting your command-line interface entries.
-*   **Remote Management:** Configure VTY lines 0-15 to require password access (`VtyRemote88!`), enforce synchronous logging, and set an automatic inactivity timeout value of **7 minutes 30 seconds**.
-*   **Banner:** Implement a secure legal warning banner blocking unauthorized access.
+You are issued three strict master container blocks. You must sort the following departments based on **largest host requirement to smallest host requirement** within each respective zone. Slice the prefixes tightly down to their absolute power-of-two boundaries with **zero address padding or gaps**.
 
-### 🛡️ Layer 2 Switchport Mitigation (Every Switch)
-*   **Trunking & Access Security:** Forcefully configure interface `F0/24` on all switches as a hardcoded static trunk link. Disable DTP negotiation on this interface.
-*   **Access Port Enforcement:** Explicitly configure interface `F0/1` as an access port.
-*   **Port Security Blueprint (On Interface `F0/1`):**
-    *   Enable standard port security.
-    *   Limit the secure MAC address capacity strictly to a maximum count of **2**.
-    *   Implement **Sticky MAC** learning so the switch registers dynamically learned devices directly into the running configuration.
-    *   Set the security violation mode to **Shutdown**. The port must instantly transition to an error-disabled state upon an unauthorized frame arrival.
-*   **Unused Interface Mitigation:** Shift all remaining unused fast-ethernet and gigabit interfaces into a designated black-hole VLAN (VLAN 999). Forcefully **shut down** all of these unassigned ports.
+### 📦 Container Zone A: Class B Allocation (`172.25.0.0/16`) — HQ Domain (5 VLANs)
+Calculate subnets sequentially for these five distinct corporate divisions:
+*   **VLAN 10 (HQ Corporate Data):** Requires 1,000 usable host IPs.
+*   **VLAN 20 (HQ Operations Support):** Requires 480 usable host IPs.
+*   **VLAN 30 (HQ Systems Development):** Requires 250 usable host IPs.
+*   **VLAN 40 (HQ Executive Telephony):** Requires 115 usable host IPs.
+*   **VLAN 99 (HQ Management & Provisioning):** Requires 14 usable host IPs.
+*   *Assignment Rule:* The **first usable IP address** of each calculated subnet block must be assigned to the corresponding `HQ-Core` sub-interface.
+
+### 📦 Container Zone B: Class A Allocation (`10.100.0.0/8`) — Campus Domain (7 VLANs)
+Calculate subnets sequentially for these seven campus academic divisions:
+*   **VLAN 110 (Campus Student Wireless):** Requires 15,000 usable host IPs.
+*   **VLAN 120 (Campus Lecture Hall LAN):** Requires 7,000 usable host IPs.
+*   **VLAN 130 (Campus Engineering Labs):** Requires 3,500 usable host IPs.
+*   **VLAN 140 (Campus Administration):** Requires 1,800 usable host IPs.
+*   **VLAN 150 (Campus Faculty Offices):** Requires 800 usable host IPs.
+*   **VLAN 160 (Campus Security & CCTV Control):** Requires 120 usable host IPs.
+*   **VLAN 199 (Campus Native Management Platform):** Requires 50 usable host IPs.
+*   *Assignment Rule:* The **first usable IP address** of each calculated subnet block must be assigned to the corresponding Switch Virtual Interface (SVI) on `Campus-MLS`.
+
+### 📦 Container Zone C: Class C Allocation (`192.168.15.0/24`) — Branch Domain (8 VLANs)
+Calculate subnets sequentially inside this restrictive space for eight branch operational units:
+*   **VLAN 210 (Branch Sales Force):** Requires 55 usable host IPs.
+*   **VLAN 220 (Branch Retail Counter):** Requires 26 usable host IPs.
+*   **VLAN 230 (Branch Back-Office Support):** Requires 12 usable host IPs.
+*   **VLAN 240 (Branch Inventory Warehousing):** Requires 12 usable host IPs.
+*   **VLAN 250 (Branch Human Resources):** Requires 6 usable host IPs.
+*   **VLAN 260 (Branch Secure POS Terminal Array):** Requires 6 usable host IPs.
+*   **VLAN 270 (Branch Guest Portal Sandbox):** Requires 2 usable host IPs.
+*   **VLAN 299 (Branch Native Infrastructure Control):** Requires 2 usable host IPs.
+*   *Assignment Rule:* The **first usable IP address** of each calculated subnet block must be assigned to the corresponding `Branch-ROAS` sub-interface.
+
+### 🛣️ Container Zone D: WAN Serial/Routed Transit Blocks (`192.168.222.0/24`)
+Allocate three consecutive `/30` point-to-point blocks out of this transit pool to bind the routers together:
+1.  `WAN-HQ-to-Campus-Primary`
+2.  `WAN-Campus-to-Branch-Primary`
+3.  `WAN-HQ-to-Branch-Floating-Backup`
 
 ---
 
-## 🔀 Phase 3: Routing Architecture Matrix
-You must design a static routing fabric that provides seamless traffic flows across all infrastructure zones, complete with path-failure protection.
+## ⚙️ Phase 2: Physical Media Layer & Port Hardening
 
-### 🗺️ HQ-Core Routing Policy
-1.  **Static Paths:** Establish explicit next-hop static routes toward all **five** Class B subnets located behind `Campus-Edge` via the primary point-to-point link.
-2.  **Primary Path to Branch:** Establish explicit next-hop static routes toward all **five** Class C subnets located behind `Branch-R1`, routing through the primary `WAN-HQ-to-Campus` interface path.
-3.  **Floating Static Route Protection:** Implement a redundant, fault-tolerant path toward the Class C Branch subnets. These backup paths must target the `WAN-HQ-to-Branch-Backup` next-hop IP and carry an Administrative Distance (AD) of **150**. This ensures they remain invisible in the active routing table until a primary serial link drops.
+### 🏎️ Layer 1 Interface Optimization
+*   **HQ Core Interconnect:** Access the link linking `HQ-Core` to `SW-HQ-Distribution`. Turn off auto-negotiation on both sides. Forcefully lock the operational speed parameters to **100 Mbps** and bind the duplex setting to **Full** on both components.
+*   **Campus Core Interconnect:** Access the two trunk links linking `Campus-MLS` down to the campus access switches. Turn off negotiation and explicitly lock their duplex parameters to **Full**.
 
-### 🗺️ Campus-Edge Routing Policy
-1.  **Symmetric Visibility:** Establish explicit next-hop static routes to all **five** Class A subnets via `HQ-Core`.
-2.  **Branch Reachability:** Establish explicit next-hop static routes to all **five** Class C subnets via `Branch-R1`'s primary serial address.
+### ⌨️ Management Plane & Privilege Level Hardening
+Apply these standard administrative baseline security parameters globally across all 3 routers and 4 switches:
+*   **Password Security:** Configure the devices to encrypt all plain-text passwords stored in the running configuration file.
+*   **Privileged EXEC Access:** Lock privileged mode with a cryptographically secure hashing method using the password: `CiscoMegaMode77!`
+*   **Console and Remote Pathways:** Secure both the physical console line and all VTY lines using the password: `SecureLineAccess44!`
+*   **Inactivity Management:** Set an exact automatic inactivity disconnect timer of **6 minutes and 15 seconds** on all active VTY lines.
+*   **Terminal Output Alignment:** Ensure that background system logs do not interrupt or fracture your typed lines during manual configuration sessions.
 
-### 🗺️ Branch-R1 Routing Policy
-1.  **Gateway of Last Resort:** To keep the branch configuration compact, do not write individual destination routes. Instead, configure a single **Default Route (`0.0.0.0/0`)** pointing toward the primary `Campus-Edge` interface IP.
-2.  **Backup Default Route:** Implement a **Floating Default Route (`0.0.0.0/0`)** targeting the backup link interface of `HQ-Core`. Assign this path an Administrative Distance (AD) of **150**.
+### 🛡️ Layer 2 Switchport Mitigation & Port Security
+Execute the following port mitigation and locking techniques across **all 4 switches**:
+*   **Client Port Lockdown:** Access all active user-facing client ports (`F0/1` through `F0/10`) and explicitly force them to operate strictly as access ports.
+*   **Trunk Port Isolation:** Access interface F0/24 on all switches and lock it to run strictly as a static trunk link. Disable Dynamic Trunking Protocol (DTP) negotiations entirely on these ports.
+*   **Port Security Blueprint:** Apply these structural security parameters directly onto all active user-facing client access interfaces:
+*   - Activate port security on the interface.
+    - Cap the maximum allowable learned MAC addresses strictly to a value of 1.
+    - Configure the port to dynamically learn the device's MAC address and permanently write it directly into the running configuration.
+    - Set the security violation rule to instantly shut down the interface and log an alert if an unauthorized host connects.
+*   **Black-hole containment:** Build an isolated, unroutable containment VLAN named VLAN_DEAD using the designated ID number 666. Assign all unused, unassigned physical ports across the switches into this VLAN, and systematically disable the interfaces.
 
 ---
 
-## 📝 Milestone Verification Checkpoint (Required Response)
-Before uploading your complete `.pkt` file and configuration scripts to GitHub, you must verify your deployment calculations and configurations.
+## 🔀 Phase 3: Inter-VLAN Configuration Engine
+
+### 🏎️ Router-On-A-Stick (ROAS) Deployments
+
+#### 🏢 HQ-Core Router Routing Setup
+*   Instantiate logical sub-interfaces on interface GigabitEthernet0/1 for VLANs 10, 20, 30, and 40 using 802.1Q encapsulation framing.
+*   Assign the **last usable IP address** of each respective Class B department block to these sub-interfaces to function as the client Default Gateway.
+*   **Native VLAN Configuration:** Instantiate sub-interface number 99 to process traffic for VLAN 99. Explicitly define this sub-interface to pass all management traffic untagged as the native lane.
+
+#### 🏘️ Branch-ROAS Router Routing Setup
+*   Instantiate logical sub-interfaces on interface GigabitEthernet0/1 for VLANs 210, 220, 230, 240, 250, 260, and 270 using 802.1Q encapsulation. 
+*   Assign the **last usable IP address** of each Class C department block as the gateway.
+*   **Native VLAN Configuration:** Instantiate sub-interface number 299 and configure it to handle VLAN 299 as the hardcoded native transit lane.
+
+### 🎛️ Multilayer Switch (MLS) Layer 3 Architecture
+Program `Campus-MLS` to run as a high-speed multi-VLAN core routing vehicle:
+*   **Core IP Routing:** Globally activate the switch's hardware routing engine capability.
+*   **Trunk Framing Preparation:** Access your uplink trunk interfaces (`F0/23` and `F0/24`). Before converting them into trunks, you must explicitly declare their structural encapsulation protocol as 802.1Q.
+*   **Native Alignment:** Re-align the native management transit path across both trunks to use **VLAN 199**.
+*   **Switch Virtual Interfaces (SVIs):** Instantiate virtual interface frameworks for VLANs 110, 120, 130, 140, 150, 160, and 199. Assign the **last usable IP address** of each respective Class A block to these SVIs. These addresses will act as the Default Gateways for the campus end stations.
+
+---
+
+## 🗺️ Phase 4: Explicit Static Routing Grid
+
+> ⚠️ **Constraint Reminder:** Do not use default routes (`0.0.0.0/0`) anywhere. You must map out individual, targeted destination paths across the WAN backbone.
+
+### 🧩 1. HQ-Core Static Routes
+*   **Campus Network Paths:** Add **7 distinct explicit static routes** pointing directly to each of the 7 individual Class A campus subnets sitting behind `Campus-MLS`. Point these routes to the next-hop IP of the primary WAN link.
+*   **Branch Network Paths:** Add **8 distinct explicit static routes** pointing directly to each of the 8 individual Class C branch subnets sitting behind `Branch-ROAS`. Route these entries using the primary `Campus-MLS` transit pathway.
+*   **Floating Route Resiliency:** Add **8 redundant floating static routes** targeting those same 8 Class C branch subnets. Route these backup entries directly over the point-to-point link to `Branch-ROAS`. Assign these backup paths an Administrative Distance (AD) of **150** so they stay dormant until a primary link failure occurs.
+
+### 🧩 2. Campus-MLS Static Routes
+*   **HQ Network Paths:** Add **5 distinct explicit static routes** targeting the 5 individual Class B corporate subnets, pointing directly to `HQ-Core`'s WAN interface IP.
+*   **Branch Network Paths:** Add **8 distinct explicit static routes** targeting the 8 individual Class C branch subnets, pointing directly to `Branch-ROAS`'s WAN interface IP.
+
+### 🧩 3. Branch-ROAS Static Routes
+*   **HQ Network Paths:** Add **5 distinct explicit static routes** mapping out paths to each of the 5 individual Class B subnets in the HQ domain, pointing directly to the primary `Campus-MLS` link next-hop IP.
+*   **Campus Network Paths:** Add **7 distinct explicit static routes** mapping out paths to each of the 7 individual Class A subnets in the Campus domain, pointing directly to the primary `Campus-MLS` link next-hop IP.
+*   **Floating Route Resiliency:** Add **5 redundant floating static routes** targeting the 5 Class B HQ subnets. Route these backup entries directly over your point-to-point link to `HQ-Core`. Assign these paths an Administrative Distance (AD) of **150**.
+
+---
+
+## 🏆 Required Diagnostic Verification Milestone
+
+Before pushing this network configuration to production or uploading your completed work to GitHub, you must verify your deployment calculations and configurations.
 
 Analyze your configuration and provide your exact solutions to the following **four diagnostic questions** to prove the stability of your network design:
 
-### ❓ Verification Questions
-1.  **The Class A Binary Border Check:** What are the exact Subnet Masks (in standard dot-decimal notation, e.g., `255.x.x.x`) and the exact **Broadcast Addresses** for **VLAN 20 (Development Hub)** and **VLAN 30 (Data Center Operations)**?
-2.  **The Class B Subnet Overlap Audit:** What is the precise network range (Network ID, First Usable, Last Usable, Broadcast Address) calculated for **VLAN 120 (Engineering Labs)**? Prove that it does not overlap with VLAN 110.
-3.  **The Floating Route Convergence Scenario:** If the serial connection between `Campus-Edge` and `Branch-R1` physically fails, describe exactly what happens inside the routing table of `Branch-R1`. Which route is purged, which route takes its place, and what is its specific next-hop IP address?
-4.  **Cisco IOS Security Status Validation:** Paste the exact block of Cisco IOS commands required to configure the VTY line access timeout to exactly **7 minutes and 30 seconds**, while also ensuring console logs do not split your typed command input.
+### 📋 Verification Checklist
+
+#### ❓ Question 1: Class C Micro-Block Validation
+What are the exact **Network IDs**, **CIDR Subnet Masks**, and **Broadcast Addresses** for **VLAN 250 (Branch HR)** and **VLAN 260 (Branch POS)**? Show your calculations to prove there are no address overlaps between these two blocks.
+
+#### ❓ Question 2: Router-on-a-Stick (ROAS) Native VLAN Verification
+Detail the specific parameters that must be set on the `HQ-Core` sub-interface number 99 to ensure it processes untagged management frames correctly, using the **last usable IP** of your calculated Class B management block.
+
+#### ❓ Question 3: Multilayer Switch Interface Conversion Command
+To bind your primary WAN link directly to `Campus-MLS` interface GigabitEthernet0/1 and assign it an explicit point-to-point IP address, what mode shift must you perform on that interface before the system will allow you to assign an IP address directly to a physical switch port?
+
+#### ❓ Question 4: Explicit Asymmetric Traffic Inspection
+If the primary WAN link between `Campus-MLS` and `Branch-ROAS` drops completely, tracing a packet sent from `Br-PC-1` (VLAN 210) to `HQ-PC-1` (VLAN 10) shows that traffic flows over the backup link. However, the reply packet from `HQ-PC-1` drops completely. Explain **exactly why** this return path asymmetric routing failure occurs based on your floating static route configuration rules.
