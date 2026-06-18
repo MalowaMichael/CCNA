@@ -48,9 +48,9 @@ Build the following logical infrastructure footprint within Cisco Packet Tracer.
 *   **Workstations:** Deploy 8 separate PCs on the workspace canvas. Name them `Br-PC-1` through `Br-PC-8`. Connect them respectively into `SW-Branch-Access` interfaces FastEthernet0/1 through FastEthernet0/8.
 
 ### 🌐 4. WAN Interconnect Network
-*   **Primary WAN Link 1 (HQ to Campus):** Connect `HQ-Core` Serial0/0/0 to `Campus-MLS` GigabitEthernet0/1. 
-*   **Primary WAN Link 2 (Campus to Branch):** Connect `Campus-MLS` GigabitEthernet0/2 to `Branch-ROAS` Serial0/0/1.
-*   **Floating Redundant WAN Link (HQ to Branch):** Connect `HQ-Core` GigabitEthernet0/0/0 straight to `Branch-ROAS` GigabitEthernet0/0.
+*   **Primary WAN Link 1 (HQ to Campus):** Connect `HQ-Core` GigabitEthernet0/0 to `Campus-MLS` GigabitEthernet0/1. 
+*   **Primary WAN Link 2 (Campus to Branch):** Connect `Campus-MLS` GigabitEthernet0/2 to `Branch-ROAS` GigabitEthernet0/0/0.
+*   **Floating Redundant WAN Link (HQ to Branch):** Connect `HQ-Core` Serial0/0/0 straight to `Branch-ROAS` Serial0/0/0. Use a serial DCE cable here
 
 ---
 
