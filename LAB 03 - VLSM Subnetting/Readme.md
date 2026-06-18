@@ -9,13 +9,12 @@ This project functions as a rigorous capstone assessment covering concepts from 
 
 ---
 
-## 🛠️ Physical Topology & Workspace Architecture
+## 🛠️ Logical Topology & Workspace Architecture
 
-Build the following logical infrastructure footprint within Cisco Packet Tracer. Group the components using visual boxes to represent different geographic regions. Ensure your physical connections map cleanly without messy, crossing lines.
+This is my logical topology
 
 ```text
-<img width="1757" height="473" alt="LAB 03 - VLSM   Inter-VLAN Routing" src="https://github.com/user-attachments/assets/73fa8a1d-cdf1-491a-b744-acbd31a08dd6" />
-
+[View the Topology](LAB 03 - VLSM & Inter-VLAN Routing.png)
 ```
 
 ### 🏢 1. Corporate HQ Core (Class B Address Pool) — *Inter-VLAN via ROAS*
