@@ -131,12 +131,12 @@ Execute the following port mitigation and locking techniques across **all 4 swit
 
 #### 🏢 HQ-Core Router Routing Setup
 *   Instantiate logical sub-interfaces on interface GigabitEthernet0/1 for VLANs 10, 20, 30, and 40 using 802.1Q encapsulation framing.
-*   Assign the **last usable IP address** of each respective Class B department block to these sub-interfaces to function as the client Default Gateway.
+*   Assign the **first usable IP address** of each respective Class B department block to these sub-interfaces to function as the client Default Gateway.
 *   **Native VLAN Configuration:** Instantiate sub-interface number 99 to process traffic for VLAN 99. Explicitly define this sub-interface to pass all management traffic untagged as the native lane.
 
 #### 🏘️ Branch-ROAS Router Routing Setup
 *   Instantiate logical sub-interfaces on interface GigabitEthernet0/1 for VLANs 210, 220, 230, 240, 250, 260, and 270 using 802.1Q encapsulation. 
-*   Assign the **last usable IP address** of each Class C department block as the gateway.
+*   Assign the **first usable IP address** of each Class C department block as the gateway.
 *   **Native VLAN Configuration:** Instantiate sub-interface number 299 and configure it to handle VLAN 299 as the hardcoded native transit lane.
 
 ### 🎛️ Multilayer Switch (MLS) Layer 3 Architecture
@@ -144,7 +144,7 @@ Program `Campus-MLS` to run as a high-speed multi-VLAN core routing vehicle:
 *   **Core IP Routing:** Globally activate the switch's hardware routing engine capability.
 *   **Trunk Framing Preparation:** Access your uplink trunk interfaces (`F0/23` and `F0/24`). Before converting them into trunks, you must explicitly declare their structural encapsulation protocol as 802.1Q.
 *   **Native Alignment:** Re-align the native management transit path across both trunks to use **VLAN 199**.
-*   **Switch Virtual Interfaces (SVIs):** Instantiate virtual interface frameworks for VLANs 110, 120, 130, 140, 150, 160, and 199. Assign the **last usable IP address** of each respective Class A block to these SVIs. These addresses will act as the Default Gateways for the campus end stations.
+*   **Switch Virtual Interfaces (SVIs):** Instantiate virtual interface frameworks for VLANs 110, 120, 130, 140, 150, 160, and 199. Assign the **first usable IP address** of each respective Class A block to these SVIs. These addresses will act as the Default Gateways for the campus end stations.
 
 ---
 
