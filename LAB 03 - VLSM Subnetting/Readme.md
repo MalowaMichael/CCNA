@@ -180,7 +180,7 @@ Analyze your configuration and provide your exact solutions to the following **f
 What are the exact **Network IDs**, **CIDR Subnet Masks**, and **Broadcast Addresses** for **VLAN 250 (Branch HR)** and **VLAN 260 (Branch POS)**? Show your calculations to prove there are no address overlaps between these two blocks.
 
 #### ❓ Question 2: Router-on-a-Stick (ROAS) Native VLAN Verification
-Detail the specific parameters that must be set on the `HQ-Core` sub-interface number 99 to ensure it processes untagged management frames correctly, using the **last usable IP** of your calculated Class B management block.
+Detail the specific parameters that must be set on the `HQ-Core` sub-interface number 99 to ensure it processes untagged management frames correctly, using the **first usable IP** of your calculated Class B management block.
 
 #### ❓ Question 3: Multilayer Switch Interface Conversion Command
 To bind your primary WAN link directly to `Campus-MLS` interface GigabitEthernet0/1 and assign it an explicit point-to-point IP address, what mode shift must you perform on that interface before the system will allow you to assign an IP address directly to a physical switch port?
