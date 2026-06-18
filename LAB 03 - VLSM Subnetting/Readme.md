@@ -14,7 +14,7 @@ This project functions as a rigorous capstone assessment covering concepts from 
 This is my logical topology
 
 ```text
-[View the Topology](LAB 03 - VLSM & Inter-VLAN Routing.png)
+[View the Topology](LAB-03-VLSM-&-Inter-VLAN-Routing.png)
 ```
 
 ### 🏢 1. Corporate HQ Core (Class B Address Pool) — *Inter-VLAN via ROAS*
