@@ -42,6 +42,8 @@ This project functions as a rigorous capstone assessment covering concepts from 
 
 </details>
 
+## 📌 Exam Instructions
+
 ### 🏢 1. Corporate HQ Core (Class B Address Pool) — *Inter-VLAN via ROAS*
 *   **Inventory:** One router named `HQ-Core` and one access layer switch named `SW-HQ-Distribution`.
 *   **Interconnect Wiring:** Cable the router's GigabitEthernet0/1 interface straight down to the switch's FastEthernet0/24 interface. This trunk line will serve as your Router-on-a-Stick engine.
