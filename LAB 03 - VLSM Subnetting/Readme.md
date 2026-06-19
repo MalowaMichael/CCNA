@@ -11,11 +11,17 @@ This project functions as a rigorous capstone assessment covering concepts from 
 
 ## 🛠️ Logical Topology & Workspace Architecture
 
-This is my logical topology
-
+<details>
+   <summary>View my solutions and topology</summary>
+   ***Detailed Subnetting Table***
+   | VLAN ID | Network Address | Subnet Mask      | First Usable Address | Last Usable Address | Broadcast Address |
+   |---------|-----------------|------------------|----------------------|---------------------|-------------------|
+   | VL 10   | 172.25.0.0/22   | 255.255.252.0    | 172.25.0.1           | 172.25.3.254        | 172.25.3.255      |
+   | VL 20   | 172.25.4.0/23   | 255.255.254.0    | 172.25.4.1           | 172.25.5.254        | 172.25.5.255      |
 ```text
 [View the Topology](LAB-03-VLSM-&-Inter-VLAN-Routing.png)
 ```
+</details>
 
 ### 🏢 1. Corporate HQ Core (Class B Address Pool) — *Inter-VLAN via ROAS*
 *   **Inventory:** One router named `HQ-Core` and one access layer switch named `SW-HQ-Distribution`.
