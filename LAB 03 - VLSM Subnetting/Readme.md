@@ -9,13 +9,11 @@ This project functions as a rigorous capstone assessment covering concepts from 
 
 ---
 
-<details>
-   
 ## 🛠️ My Logical Topology & Workspace Architecture
 
-   <summary>
-      View my VLSM subnetting table
-   </summary>
+<details>
+   
+  <summary>View my VLSM subnetting table</summary>
    
    
    | VLAN ID | Network Address     | Subnet Mask      | First Usable Address | Last Usable Address | Broadcast Address |
